@@ -1,9 +1,9 @@
 
-// Gameboard object (module)
-
-// Player objects (factory)
-
-// Controller object (module)
+document.getElementsByClassName("UI")[0].addEventListener('click', function(e) {
+    clickedCell = e.target.closest(".cell");
+    rowCol = clickedCell.children[0].id;
+    gameBoard.makeMove(controller.player1, rowCol[0], rowCol[1]);
+})
 
 const gameBoard = (function() {
     const board = [];
@@ -11,11 +11,11 @@ const gameBoard = (function() {
     for (let row = 0; row < 3; row++) {
         board[row] = []; // Create 3 arrays (ROWS)
         for (let column = 0; column < 3; column++) {
-            board[row].push(""); // Create a column for each row and set it to empty
+            board[row].push("-"); // Create a column for each row and set it to empty
         }
     }
     const drawBoard = function() {
-        for (let row = 0; row < 3; row++) {
+        for (let row = 0; row < 3; row++) { // Don't repeat yourself??
             for (let column = 0; column < 3; column++) {
                 document.getElementById(`${row}${column}`).textContent = board[row][column]
             }
@@ -23,8 +23,12 @@ const gameBoard = (function() {
     }
 
     const makeMove = function(player, row, column) {
+        if (board[row][column] === "-") {
         board[row][column] = player.symbol;
         drawBoard();
+        } else {
+            alert("Cell is already taken")
+        }
     }
 
     // const getBoard = () => board;

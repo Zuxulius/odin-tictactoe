@@ -5,31 +5,45 @@
 
 // Controller object (module)
 
-const gameBoard = function() {
+const gameBoard = (function() {
     const board = [];
     // I think this just sets up the board
     for (let row = 0; row < 3; row++) {
         board[row] = []; // Create 3 arrays (ROWS)
         for (let column = 0; column < 3; column++) {
-            board[row].push("-"); // Create a column for each row and set it to empty
+            board[row].push(""); // Create a column for each row and set it to empty
         }
     }
     const drawBoard = function() {
-        console.log(board);
+        for (let row = 0; row < 3; row++) {
+            for (let column = 0; column < 3; column++) {
+                document.getElementById(`${row}${column}`).textContent = board[row][column]
+            }
+        }
     }
-    const getBoard = () => board;
-    return {drawBoard, getBoard};
-};
+
+    const makeMove = function(player, row, column) {
+        board[row][column] = player.symbol;
+        drawBoard();
+    }
+
+    // const getBoard = () => board;
+    return {makeMove, drawBoard};
+})();
 
 const player = function(symbol) {
     return {symbol}
 }
 
 const controller = (function() {
-    const activeBoard = gameBoard();
+    const player1 = player("X");
+    const player2 = player("O");
+
+    const playRound = function() {
+
+    }
+
+    return {player1, player2}
 })();
 
-// function cell() {
-//     let value = "-";
-//     return {value};
-// }
+gameBoard.makeMove(controller.player1, 1, 1);

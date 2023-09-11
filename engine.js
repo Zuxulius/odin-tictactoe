@@ -1,6 +1,7 @@
 
 
 const gameBoard = (function() {
+    let turns = 0;
     const freshBoard = [
                     ["","",""],
                     ["","",""],
@@ -26,6 +27,7 @@ const gameBoard = (function() {
     const makeMove = function(player, row, column) {
         let legalMove; // To know whether to change turns or not
         if (board[row][column] === "") {
+            ++turns;
             legalMove = true;
             board[row][column] = player.symbol;
             drawBoard();
@@ -37,12 +39,39 @@ const gameBoard = (function() {
         return legalMove;
     }
 
-        const clearBoard = function() {
-            board = freshBoard;
-        }
+    const checkGameEnd = function(row, col, player) {
+        if (
+            // For every index in the row, it checks with the arrow function.
+            board[row].every((cell) => cell === player.symbol) ||
+            // for each row in the board, it takes the index of col and adds it to a new array. Then it checks each index in that array with the arrow function.
+            board.map((row) => row[col]).every((cell) => cell === player.symbol)
+            ) {
+                alert(`${player.symbol} wins!`)
+        } else if (
+            // Check diagonals
+            // If row and col are the same we're in the main diagonal (0,0 1,1 2,2)
+            row === col &&
+            // Creates an array from 0-2, checks the board at 0,0 1,1 2,2
+            [...Array(board.length).keys()].every((i) => board[i][i] === player.symbol) ||
+            // If row + col = row length - 1 (2) we're in the anti-diagonal (0,2 1,1 2,0)
+            row + col === (board.length - 1) &&
+            // Creates an array from 0-2, checks the board at 0,2 1,1 2,0
+            [...Array(board.length).keys()].every((i) => board[i][board.length - 1 - i] === player.symbol)
+        ) {
+            alert(`${player.symbol} wins!`)
+        } else if (turns === 9) {
+            // game is finished with a draw
+            alert("IT'S A DRAW")
+        } else {return false}
+    }
+
+    const clearBoard = function() {
+        board = freshBoard;
+    }
 
     // const getBoard = () => board;
-        return {makeMove, drawBoard};
+    return {makeMove, drawBoard, checkGameEnd};
+
 })();
 
 const player = function(symbol) {
@@ -65,8 +94,12 @@ const controller = (function() {
     const playRound = function() {
         legalMove = gameBoard.makeMove(turn, rowCol[0], rowCol[1]);
         if (turn === player1 && legalMove) {
+            gameBoard.checkGameEnd(rowCol[0], rowCol[1], turn);
             turn = player2;
-        } else if (legalMove) {turn = player1}
+        } else if (legalMove) {
+            gameBoard.checkGameEnd(rowCol[0], rowCol[1], turn);
+            turn = player1;
+        }
     }
 
     return {playRound}

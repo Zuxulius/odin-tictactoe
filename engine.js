@@ -24,21 +24,25 @@ const gameBoard = (function() {
     }
 
     const makeMove = function(player, row, column) {
+        let legalMove; // To know whether to change turns or not
         if (board[row][column] === "") {
-        board[row][column] = player.symbol;
-        drawBoard();
+            legalMove = true;
+            board[row][column] = player.symbol;
+            drawBoard();
         } else {
+            legalMove = false;
             console.log("Cell is taken")
             // alert("Cell is already taken")
         }
+        return legalMove;
     }
 
-    const clearBoard = function() {
-        board = freshBoard;
-    }
+        const clearBoard = function() {
+            board = freshBoard;
+        }
 
     // const getBoard = () => board;
-    return {makeMove, drawBoard};
+        return {makeMove, drawBoard};
 })();
 
 const player = function(symbol) {
@@ -52,21 +56,18 @@ const controller = (function() {
         let clickedCell = e.target.closest(".cell");
         rowCol = clickedCell.children[0].id;
         controller.playRound();
-        // gameBoard.makeMove(controller.player1, rowCol[0], rowCol[1]);
 })
+
     const player1 = player("X");
     const player2 = player("O");
     let turn = player1;
+
     const playRound = function() {
-        gameBoard.makeMove(turn, rowCol[0], rowCol[1]);
-        if (turn === player1) {
+        legalMove = gameBoard.makeMove(turn, rowCol[0], rowCol[1]);
+        if (turn === player1 && legalMove) {
             turn = player2;
-        } else {turn = player1}
+        } else if (legalMove) {turn = player1}
     }
 
-    return {playRound, player1, player2}
+    return {playRound}
 })();
-
-gameBoard.makeMove(controller.player1, 1, 1);
-
-// If i get the player turn logic in the controller, i can make a function that adds the event listener and uses the current turn.

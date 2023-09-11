@@ -22,6 +22,11 @@ body, html {
     align-items: center;
 }
 
+.cell:hover {
+    cursor: pointer;
+    background-color: beige;
+}
+
 h1 {
     margin: 0;
     padding: 0;

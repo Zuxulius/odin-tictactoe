@@ -104,3 +104,16 @@ const controller = (function() {
 
     return {playRound}
 })();
+
+const pause = (function() {
+    let pause = document.getElementsByClassName("pause")[0];
+    // pause element toggle
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape" || event.code === 27) {
+            if (pause.style.display !== "none") {
+                pause.style.display = "none";
+            } else {pause.style.display = "block"}
+        }
+    })
+
+})

@@ -7,7 +7,7 @@ const gameBoard = (function() {
                     ["","",""],
                     ["","",""]
                 ];
-    let board = freshBoard;
+    let board = freshBoard.map(row => row.slice());
     // // I think this just sets up the board
     // for (let row = 0; row < 3; row++) {
     //     board[row] = []; // Create 3 arrays (ROWS)
@@ -66,11 +66,17 @@ const gameBoard = (function() {
     }
 
     const clearBoard = function() {
-        board = freshBoard;
+        board = freshBoard.map(row => row.slice());
+        turns = 0;
+        drawBoard();
+    }
+
+    const restart = function() {
+        clearBoard();
     }
 
     // const getBoard = () => board;
-    return {makeMove, drawBoard, checkGameEnd};
+    return {makeMove, drawBoard, checkGameEnd, restart};
 
 })();
 
@@ -101,19 +107,38 @@ const controller = (function() {
             turn = player1;
         }
     }
+    let pause = document.getElementsByClassName("pause")[0];
+    let restart = document.getElementsByClassName("restart")[0];
+    let exit = document.getElementsByClassName("exit")[0];
+
+    // pause element toggle
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape" || event.code === 27) {
+            if (pause.style.visibility !== "hidden") {
+                pause.style.visibility = "hidden";
+            } else {pause.style.visibility = "visible"}
+        }
+    })
+    restart.addEventListener("click", gameBoard.restart)
+    // exit.addEventListener("click", gameBoard.restart, )
 
     return {playRound}
 })();
 
-const pause = (function() {
-    let pause = document.getElementsByClassName("pause")[0];
-    // pause element toggle
-    document.addEventListener("keydown", function(event) {
-        if (event.key === "Escape" || event.code === 27) {
-            if (pause.style.display !== "none") {
-                pause.style.display = "none";
-            } else {pause.style.display = "block"}
-        }
-    })
+// const pause = (function() {
+//     let pause = document.getElementsByClassName("pause")[0];
+//     let restart = document.getElementsByClassName("restart")[0];
+//     let exit = document.getElementsByClassName("exit")[0];
 
-})
+//     // pause element toggle
+//     document.addEventListener("keydown", function(event) {
+//         if (event.key === "Escape" || event.code === 27) {
+//             if (pause.style.display !== "none") {
+//                 pause.style.display = "none";
+//             } else {pause.style.display = "block"}
+//         }
+//     })
+
+//     restart.addEventListener("click", gameBoard.restart)
+//     // exit.addEventListener("click", gameBoard.exit())
+// })();

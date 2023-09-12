@@ -48,13 +48,13 @@ h1 {
     position: absolute;
     z-index: 1;
     margin: 0;
-    display: none;
+    visibility: visible;
 }
 
 .pause {
-    transition: 1000ms;
     position: absolute;
     display: flex;
+    visibility: hidden;
     z-index: 1;
     gap: 10px;
     background-color: rgb(105, 140, 140);

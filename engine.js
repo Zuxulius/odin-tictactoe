@@ -82,6 +82,11 @@ const player = function(symbol) {
 
 const controller = (function() {
     let rowCol; // Scopes it within the controller module.
+    let menu = document.getElementsByClassName("menu")[0];
+    let pause = document.getElementsByClassName("pause")[0];
+    let restart = document.getElementsByClassName("restart")[0];
+    let exit = document.getElementsByClassName("exit")[0];
+    let start = document.getElementsByClassName("start")[0];
 
     // Clicking on a cell functionality
     document.getElementsByClassName("UI")[0].addEventListener('click', function(e) {
@@ -100,7 +105,10 @@ const controller = (function() {
         const isBot = e.target.value === 'bot';
         document.getElementById('player2-name').style.display = isBot ? 'none' : '';
         document.getElementById('player2-difficulty').style.display = isBot ? '' : 'none';
-      });
+    });
+
+    // Get values from player-setup and start game
+    start.addEventListener("click", () => menu.style.visibility = "hidden")
 
     const player1 = player("X");
     const player2 = player("O");
@@ -117,23 +125,22 @@ const controller = (function() {
         }
     }
 
-    let menu = document.getElementsByClassName("menu")[0];
-    let pause = document.getElementsByClassName("pause")[0];
-    let restart = document.getElementsByClassName("restart")[0];
-    let exit = document.getElementsByClassName("exit")[0];
 
     // pause element toggle
     document.addEventListener("keydown", function(event) {
-        if (event.key === "Escape" || event.code === 27) {
-            if (pause.style.visibility !== "hidden") {
-                pause.style.visibility = "hidden";
-            } else {pause.style.visibility = "visible"}
+        if (event.key === "Escape") {
+            if (window.getComputedStyle(menu).visibility !== "visible") {
+                if (window.getComputedStyle(pause).visibility !== "hidden") {
+                    pause.style.visibility = "hidden";
+                } else {pause.style.visibility = "visible"}
+            }
         }
     })
     restart.addEventListener("click", gameBoard.clearBoard)
     exit.addEventListener("click", () => {
         gameBoard.clearBoard();
         menu.style.visibility = "visible";
+        pause.style.visibility = "hidden";
     })
 
     return {playRound}
@@ -159,3 +166,5 @@ const controller = (function() {
 
 
 // Create start game logic with players, names and bots input
+
+// Upon pressing start game, the values should be passed on

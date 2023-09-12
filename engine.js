@@ -83,11 +83,24 @@ const player = function(symbol) {
 const controller = (function() {
     let rowCol; // Scopes it within the controller module.
 
+    // Clicking on a cell functionality
     document.getElementsByClassName("UI")[0].addEventListener('click', function(e) {
         let clickedCell = e.target.closest(".cell");
         rowCol = clickedCell.children[0].id;
         controller.playRound();
 })
+
+    // Player or Bot functionality
+    document.getElementById('player1-type').addEventListener('change', (e) => {
+        const isBot = e.target.value === 'bot';
+        document.getElementById('player1-name').style.display = isBot ? 'none' : '';
+        document.getElementById('player1-difficulty').style.display = isBot ? '' : 'none';
+    });
+    document.getElementById('player2-type').addEventListener('change', (e) => {
+        const isBot = e.target.value === 'bot';
+        document.getElementById('player2-name').style.display = isBot ? 'none' : '';
+        document.getElementById('player2-difficulty').style.display = isBot ? '' : 'none';
+      });
 
     const player1 = player("X");
     const player2 = player("O");

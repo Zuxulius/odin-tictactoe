@@ -53,8 +53,16 @@ h1 {
 }
 
 .player-setup {
+    position: relative;
     display: flex;
     gap: 50px;
+}
+
+#player1-name, #player1-difficulty, #player2-name, #player2-difficulty {
+    width: 10vw;
+    height: 3vh;
+    padding: 0;
+    border: none;
 }
 
 .pause {

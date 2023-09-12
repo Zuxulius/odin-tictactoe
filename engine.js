@@ -71,12 +71,8 @@ const gameBoard = (function() {
         drawBoard();
     }
 
-    const restart = function() {
-        clearBoard();
-    }
-
     // const getBoard = () => board;
-    return {makeMove, drawBoard, checkGameEnd, restart};
+    return {makeMove, drawBoard, checkGameEnd, clearBoard};
 
 })();
 
@@ -107,6 +103,8 @@ const controller = (function() {
             turn = player1;
         }
     }
+
+    let menu = document.getElementsByClassName("menu")[0];
     let pause = document.getElementsByClassName("pause")[0];
     let restart = document.getElementsByClassName("restart")[0];
     let exit = document.getElementsByClassName("exit")[0];
@@ -119,8 +117,11 @@ const controller = (function() {
             } else {pause.style.visibility = "visible"}
         }
     })
-    restart.addEventListener("click", gameBoard.restart)
-    // exit.addEventListener("click", gameBoard.restart, )
+    restart.addEventListener("click", gameBoard.clearBoard)
+    exit.addEventListener("click", () => {
+        gameBoard.clearBoard();
+        menu.style.visibility = "visible";
+    })
 
     return {playRound}
 })();
@@ -142,3 +143,6 @@ const controller = (function() {
 //     restart.addEventListener("click", gameBoard.restart)
 //     // exit.addEventListener("click", gameBoard.exit())
 // })();
+
+
+// Create start game logic with players, names and bots input

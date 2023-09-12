@@ -39,9 +39,9 @@ h1 {
 .menu {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    border: 1px solid magenta;
-    background-color: rgb(105, 140, 140);
+    background-color: bisque;
     /* border-radius: 10%; */
     height: 100vh;
     width: 100vw;
@@ -49,6 +49,12 @@ h1 {
     z-index: 1;
     margin: 0;
     visibility: visible;
+    gap: 20px;
+}
+
+.player-setup {
+    display: flex;
+    gap: 50px;
 }
 
 .pause {

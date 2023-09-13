@@ -46,7 +46,7 @@ const gameBoard = (function() {
             // for each row in the board, it takes the index of col and adds it to a new array. Then it checks each index in that array with the arrow function.
             board.map((row) => row[col]).every((cell) => cell === player.symbol)
             ) {
-                alert(`${player.symbol} wins!`)
+                alert(`${player.name} wins!`)
         } else if (
             // Check diagonals
             // If row and col are the same we're in the main diagonal (0,0 1,1 2,2)
@@ -58,7 +58,7 @@ const gameBoard = (function() {
             // Creates an array from 0-2, checks the board at 0,2 1,1 2,0
             [...Array(board.length).keys()].every((i) => board[i][board.length - 1 - i] === player.symbol)
         ) {
-            alert(`${player.symbol} wins!`)
+            alert(`${player.name} wins!`)
         } else if (turns === 9) {
             // game is finished with a draw
             alert("IT'S A DRAW")
@@ -76,8 +76,10 @@ const gameBoard = (function() {
 
 })();
 
-const player = function(symbol) {
-    return {symbol}
+const player = function(symbol, type, name) {
+    if (name === "easy") {name = "Finn"}
+    else if (name === "hard") {name = "Baldr"}
+    return {symbol, type, name}
 }
 
 const controller = (function() {
@@ -87,6 +89,9 @@ const controller = (function() {
     let restart = document.getElementsByClassName("restart")[0];
     let exit = document.getElementsByClassName("exit")[0];
     let start = document.getElementsByClassName("start")[0];
+    let player1;
+    let player2;
+    let turn;
 
     // Clicking on a cell functionality
     document.getElementsByClassName("UI")[0].addEventListener('click', function(e) {
@@ -107,12 +112,22 @@ const controller = (function() {
         document.getElementById('player2-difficulty').style.display = isBot ? '' : 'none';
     });
 
-    // Get values from player-setup and start game
-    start.addEventListener("click", () => menu.style.visibility = "hidden")
+    const startGame = function() {
+        // Get values from player-setup and start game
+        menu.style.visibility = "hidden";
+        let player1Type = document.getElementById("player1-type").value;
+        let player2Type = document.getElementById("player2-type").value;
+        // Get written name or bot difficulty as name
+        let player1Name = player1Type !== 'bot' ? document.getElementById("player1-name").value : document.getElementById("player1-difficulty").value;
+        let player2Name = player2Type !== 'bot' ? document.getElementById("player2-name").value : document.getElementById("player2-difficulty").value;
+        player1 = player("X", player1Type, player1Name);
+        player2 = player("O", player2Type, player2Name);
+        turn = player1;
+    }
 
-    const player1 = player("X");
-    const player2 = player("O");
-    let turn = player1;
+    start.addEventListener("click", () => {
+        startGame();
+    });
 
     const playRound = function() {
         legalMove = gameBoard.makeMove(turn, rowCol[0], rowCol[1]);
@@ -146,23 +161,7 @@ const controller = (function() {
     return {playRound}
 })();
 
-// const pause = (function() {
-//     let pause = document.getElementsByClassName("pause")[0];
-//     let restart = document.getElementsByClassName("restart")[0];
-//     let exit = document.getElementsByClassName("exit")[0];
 
-//     // pause element toggle
-//     document.addEventListener("keydown", function(event) {
-//         if (event.key === "Escape" || event.code === 27) {
-//             if (pause.style.display !== "none") {
-//                 pause.style.display = "none";
-//             } else {pause.style.display = "block"}
-//         }
-//     })
-
-//     restart.addEventListener("click", gameBoard.restart)
-//     // exit.addEventListener("click", gameBoard.exit())
-// })();
 
 
 // Create start game logic with players, names and bots input

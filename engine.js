@@ -1,5 +1,4 @@
 
-
 const gameBoard = (function() {
     let turns = 0;
     let alert = document.getElementsByClassName("alert")[0];
@@ -108,19 +107,21 @@ const controller = (function() {
 
     // Clicking on a cell functionality
     document.getElementsByClassName("UI")[0].addEventListener('click', function(e) {
-        let clickedCell = e.target.closest(".cell");
-        rowCol = clickedCell.children[0].id;
-        controller.playRound();
-        if (turn.name === "Finn" || turn.name === "Baldr") {
-            // Computer checks if last round was a win for the other player
-            if (gameBoard.checkGameEnd(rowCol[0], rowCol[1], player1.type === 'bot' ? player2 : player1) === false) {
-                computer();
-                playRound();
+        if (!(player1.type === "bot" && player2.type === "bot")) {
+            // It only works to click on cells if one of the players are human
+            let clickedCell = e.target.closest(".cell");
+            rowCol = clickedCell.children[0].id;
+            controller.playRound();
+            if (turn.name === "Finn" || turn.name === "Baldr") {
+                // Computer checks if last round was a win for the other player
+                if (gameBoard.checkGameEnd(rowCol[0], rowCol[1], player1.type === 'bot' ? player2 : player1) === false) {
+                    computer();
+                }
             }
         }
-})
+    })
 
-    // Player or Bot functionality
+    // Player or Bot menu functionality
     document.getElementById('player1-type').addEventListener('change', (e) => {
         const isBot = e.target.value === 'bot';
         document.getElementById('player1-name').style.display = isBot ? 'none' : '';
@@ -144,10 +145,9 @@ const controller = (function() {
         player2 = player("⭕️", player2Type, player2Name);
         turn = player1;
         if (player1Type === 'bot') {
-            computer()
             setTimeout( () => {
-            playRound();
-            }, 1000);
+            computer();
+            }, 100);
         }
     }
 
@@ -166,6 +166,19 @@ const controller = (function() {
         }
         let move = Math.floor(Math.random() * moves.length);
         rowCol = moves[move]
+        playRound();
+        // If both are bots
+        if (player1.type === "bot" && player2.type === "bot") {
+            if (gameBoard.checkGameEnd(rowCol[0], rowCol[1], turn === player1 ? player2 : player1) === false) {
+                setTimeout(() => {
+                    computer();
+                }, 1000)
+            }
+        }
+    }
+
+    const soloPlay = function() {
+
     }
 
     const playRound = function() {
@@ -191,12 +204,12 @@ const controller = (function() {
     })
     restart.addEventListener("click", () => {
         gameBoard.clearBoard();
+        turn = player1;
         pause.style.visibility = "hidden";
         if (player1.type === 'bot') {
-            computer()
             setTimeout( () => {
-            playRound();
-            }, 1000);
+            computer();
+            }, 100);
         }
     })
     exit.addEventListener("click", () => {
@@ -208,4 +221,4 @@ const controller = (function() {
     return {playRound, pause}
 })();
 
-// Create bot and its logic
+// I'd like for two bots to be able to play against each other.

@@ -2,6 +2,7 @@
 
 const gameBoard = (function() {
     let turns = 0;
+    let alert = document.getElementsByClassName("alert")[0];
     const freshBoard = [
                     ["","",""],
                     ["","",""],
@@ -32,11 +33,18 @@ const gameBoard = (function() {
             board[row][column] = player.symbol;
             drawBoard();
         } else {
+            displayAlert("Cell is taken.", 1000);
             legalMove = false;
-            console.log("Cell is taken")
-            // alert("Cell is already taken")
         }
         return legalMove;
+    }
+
+    const displayAlert = function(text, time) {
+        alert.style.visibility = "visible";
+        alert.textContent = text;
+        setTimeout( () => {
+            alert.style.visibility = "hidden";
+        }, time);
     }
 
     const checkGameEnd = function(row, col, player) {
@@ -46,7 +54,8 @@ const gameBoard = (function() {
             // for each row in the board, it takes the index of col and adds it to a new array. Then it checks each index in that array with the arrow function.
             board.map((row) => row[col]).every((cell) => cell === player.symbol)
             ) {
-                alert(`${player.name} wins!`)
+                controller.pause.style.visibility = "visible";
+                displayAlert(`${player.name} wins!`.toUpperCase(), 3000);
         } else if (
             // Check diagonals
             // If row and col are the same we're in the main diagonal (0,0 1,1 2,2)
@@ -58,10 +67,12 @@ const gameBoard = (function() {
             // Creates an array from 0-2, checks the board at 0,2 1,1 2,0
             [...Array(board.length).keys()].every((i) => board[i][board.length - 1 - i] === player.symbol)
         ) {
-            alert(`${player.name} wins!`)
+            controller.pause.style.visibility = "visible";
+            displayAlert(`${player.name} wins!`.toUpperCase(), 3000);
         } else if (turns === 9) {
             // game is finished with a draw
-            alert("IT'S A DRAW")
+            controller.pause.style.visibility = "visible";
+            displayAlert("IT'S A DRAW!", 3000);
         } else {return false}
     }
 
@@ -79,6 +90,7 @@ const gameBoard = (function() {
 const player = function(symbol, type, name) {
     if (name === "easy") {name = "Finn"}
     else if (name === "hard") {name = "Baldr"}
+    else if (name === "") {name = symbol}
     return {symbol, type, name}
 }
 
@@ -151,14 +163,17 @@ const controller = (function() {
             }
         }
     })
-    restart.addEventListener("click", gameBoard.clearBoard)
+    restart.addEventListener("click", () => {
+        gameBoard.clearBoard();
+        pause.style.visibility = "hidden";
+    })
     exit.addEventListener("click", () => {
         gameBoard.clearBoard();
         menu.style.visibility = "visible";
         pause.style.visibility = "hidden";
     })
 
-    return {playRound}
+    return {playRound, pause}
 })();
 
 

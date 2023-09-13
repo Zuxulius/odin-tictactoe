@@ -15,11 +15,13 @@ body, html {
     grid-template-rows: repeat(3, 1fr);
     width: 100vw;
     height: 100vh;
-    background-color: bisque;
+    background: rgb(245,255,134);
+    background: linear-gradient(90deg, rgba(245,255,134,1) 0%, rgba(215,255,247,1) 100%);
+    /* background-color: bisque; */
 }
 
 .cell {
-    border: solid 1px brown;
+    border: solid 0.1px rgba(165,42,42,0.5);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -41,8 +43,10 @@ h1 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: bisque;
-    /* border-radius: 10%; */
+    /* background-color: bisque; */
+    background: rgb(255,228,196);
+    background: radial-gradient(circle, rgba(255,228,196,1) 30%, rgba(63,251,214,1) 100%);
+    /* background-image: url("menu.jpg"); */
     height: 100vh;
     width: 100vw;
     position: absolute;

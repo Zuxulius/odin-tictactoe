@@ -132,8 +132,8 @@ const controller = (function() {
         // Get written name or bot difficulty as name
         let player1Name = player1Type !== 'bot' ? document.getElementById("player1-name").value : document.getElementById("player1-difficulty").value;
         let player2Name = player2Type !== 'bot' ? document.getElementById("player2-name").value : document.getElementById("player2-difficulty").value;
-        player1 = player("X", player1Type, player1Name);
-        player2 = player("O", player2Type, player2Name);
+        player1 = player("❌", player1Type, player1Name);
+        player2 = player("⭕️", player2Type, player2Name);
         turn = player1;
     }
 

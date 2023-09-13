@@ -82,8 +82,9 @@ const gameBoard = (function() {
         drawBoard();
     }
 
-    // const getBoard = () => board;
-    return {makeMove, drawBoard, checkGameEnd, clearBoard};
+    const getBoard = () => board;
+
+    return {getBoard, makeMove, drawBoard, checkGameEnd, clearBoard};
 
 })();
 
@@ -110,6 +111,13 @@ const controller = (function() {
         let clickedCell = e.target.closest(".cell");
         rowCol = clickedCell.children[0].id;
         controller.playRound();
+        if (turn.name === "Finn" || turn.name === "Baldr") {
+            // Computer checks if last round was a win for the other player
+            if (gameBoard.checkGameEnd(rowCol[0], rowCol[1], player1.type === 'bot' ? player2 : player1) === false) {
+                computer();
+                playRound();
+            }
+        }
 })
 
     // Player or Bot functionality
@@ -135,11 +143,30 @@ const controller = (function() {
         player1 = player("❌", player1Type, player1Name);
         player2 = player("⭕️", player2Type, player2Name);
         turn = player1;
+        if (player1Type === 'bot') {
+            computer()
+            setTimeout( () => {
+            playRound();
+            }, 1000);
+        }
     }
 
     start.addEventListener("click", () => {
         startGame();
     });
+
+    const computer = function() {
+        let currentBoard = gameBoard.getBoard();
+        let moves = [];
+        for (let i=0; i<3; i++) {
+            for (let j=0; j<3; j++) {
+                // Every empty cell is a legal move, so we append its indices to the moves array
+                if (currentBoard[i][j] === "") {moves.push(`${i}${j}`)}
+            }
+        }
+        let move = Math.floor(Math.random() * moves.length);
+        rowCol = moves[move]
+    }
 
     const playRound = function() {
         legalMove = gameBoard.makeMove(turn, rowCol[0], rowCol[1]);
@@ -151,7 +178,6 @@ const controller = (function() {
             turn = player1;
         }
     }
-
 
     // pause element toggle
     document.addEventListener("keydown", function(event) {
@@ -166,6 +192,12 @@ const controller = (function() {
     restart.addEventListener("click", () => {
         gameBoard.clearBoard();
         pause.style.visibility = "hidden";
+        if (player1.type === 'bot') {
+            computer()
+            setTimeout( () => {
+            playRound();
+            }, 1000);
+        }
     })
     exit.addEventListener("click", () => {
         gameBoard.clearBoard();
@@ -176,9 +208,4 @@ const controller = (function() {
     return {playRound, pause}
 })();
 
-
-
-
-// Create start game logic with players, names and bots input
-
-// Upon pressing start game, the values should be passed on
+// Create bot and its logic

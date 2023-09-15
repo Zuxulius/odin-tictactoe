@@ -95,8 +95,8 @@ const gameBoard = (function() {
 
 const player = function(symbol, type, name) {
     if (name === "easy") {name = "Finn"}
-    else if (name === "hard") {name = "Baldr"}
-    else if (name === "impossible") {name = "Agatha"}
+    else if (name === "hard") {name = "Agatha"}
+    else if (name === "impossible") {name = "Baldr"}
     else if (name === "") {name = symbol}
     return {symbol, type, name}
 }
@@ -165,10 +165,17 @@ const controller = (function() {
     const computer = function() {
         let currentBoard = gameBoard.getBoard();
         if (turn.name === "Finn") {
+            console.log("I'M FINN!")
             easyMode();
         }
         if (turn.name === "Baldr") {
+            console.log("I'M BALDR!")
             hardMode();
+        }
+        if (turn.name === "Agatha") {
+            dice = Math.random();
+            console.log(dice)
+            dice < 0.7 ? hardMode() : easyMode();
         }
 
         // Easymode code
@@ -197,7 +204,7 @@ const controller = (function() {
                         currentBoard[i][j] = turn.symbol;
                         let score = minimax(currentBoard, minOrMax);
                         currentBoard[i][j] = "";
-                        if (score > bestScore) {
+                        if ((!minOrMax && score > bestScore) || (minOrMax && score < bestScore)) {
                             bestScore = score;
                             bestMove = { i, j };
                         }
@@ -361,5 +368,4 @@ const controller = (function() {
     return {playRound, pause}
 })();
 
-// Implement minimax algorithm
 // Refactor the messy ass code

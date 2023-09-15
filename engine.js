@@ -1,5 +1,6 @@
 
 const gameBoard = (function() {
+    let gameEnd;
     let turns = 0;
     let alert = document.getElementsByClassName("alert")[0];
     const freshBoard = [
@@ -55,6 +56,7 @@ const gameBoard = (function() {
             ) {
                 controller.pause.style.visibility = "visible";
                 displayAlert(`${player.name} wins!`.toUpperCase(), 3000);
+                gameEnd = true;
         } else if (
             // Check diagonals
             // If row and col are the same we're in the main diagonal (0,0 1,1 2,2)
@@ -66,30 +68,35 @@ const gameBoard = (function() {
             // Creates an array from 0-2, checks the board at 0,2 1,1 2,0
             [...Array(board.length).keys()].every((i) => board[i][board.length - 1 - i] === player.symbol)
         ) {
-            controller.pause.style.visibility = "visible";
-            displayAlert(`${player.name} wins!`.toUpperCase(), 3000);
+                controller.pause.style.visibility = "visible";
+                displayAlert(`${player.name} wins!`.toUpperCase(), 3000);
+                gameEnd = true;
         } else if (turns === 9) {
-            // game is finished with a draw
-            controller.pause.style.visibility = "visible";
-            displayAlert("IT'S A DRAW!", 3000);
+                // game is finished with a draw
+                controller.pause.style.visibility = "visible";
+                displayAlert("IT'S A DRAW!", 3000);
+                gameEnd = true;
         } else {return false}
     }
 
     const clearBoard = function() {
         board = freshBoard.map(row => row.slice());
+        gameEnd = false;
         turns = 0;
         drawBoard();
     }
 
     const getBoard = () => board;
+    const getGameEnd = () => gameEnd;
 
-    return {getBoard, makeMove, drawBoard, checkGameEnd, clearBoard};
+    return {getGameEnd, getBoard, makeMove, drawBoard, checkGameEnd, clearBoard};
 
 })();
 
 const player = function(symbol, type, name) {
     if (name === "easy") {name = "Finn"}
     else if (name === "hard") {name = "Baldr"}
+    else if (name === "impossible") {name = "Agatha"}
     else if (name === "") {name = symbol}
     return {symbol, type, name}
 }
@@ -112,7 +119,7 @@ const controller = (function() {
             let clickedCell = e.target.closest(".cell");
             rowCol = clickedCell.children[0].id;
             controller.playRound();
-            if (turn.name === "Finn" || turn.name === "Baldr") {
+            if (turn.type === "bot") {
                 // Computer checks if last round was a win for the other player
                 if (gameBoard.checkGameEnd(rowCol[0], rowCol[1], player1.type === 'bot' ? player2 : player1) === false) {
                     computer();
@@ -157,19 +164,56 @@ const controller = (function() {
 
     const computer = function() {
         let currentBoard = gameBoard.getBoard();
-        let moves = [];
-        for (let i=0; i<3; i++) {
-            for (let j=0; j<3; j++) {
-                // Every empty cell is a legal move, so we append its indices to the moves array
-                if (currentBoard[i][j] === "") {moves.push(`${i}${j}`)}
+        if (turn.name === "Finn") {
+            easyMode();
+        }
+        if (turn.name === "Baldr") {
+            hardMode();
+        }
+
+        // Easymode code
+        function easyMode() {
+            let moves = [];
+            for (let i=0; i<3; i++) {
+                for (let j=0; j<3; j++) {
+                    // Every empty cell is a legal move, so we append its indices to the moves array
+                    if (currentBoard[i][j] === "") {moves.push(`${i}${j}`)}
+                }
+            }
+            let move = Math.floor(Math.random() * moves.length);
+            rowCol = moves[move]
+            playRound();
+        }
+
+        // Hardmode code
+        function hardMode() {
+            let minOrMax = turn.symbol === "❌" ? true : false;
+            let bestScore = minOrMax === false ? -Infinity : Infinity;
+            let bestMove;
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (currentBoard[i][j] === "") {
+                        currentBoard[i][j] = turn.symbol;
+                        let score = minimax(currentBoard, minOrMax);
+                        currentBoard[i][j] = "";
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestMove = { i, j };
+                        }
+                    }
+                }
+            }
+            if (bestMove) {
+                rowCol = `${bestMove.i}${bestMove.j}`;
+                // currentBoard[bestMove.i][bestMove.j] = turn.symbol;
+                playRound()
             }
         }
-        let move = Math.floor(Math.random() * moves.length);
-        rowCol = moves[move]
-        playRound();
+
         // If both are bots
         if (player1.type === "bot" && player2.type === "bot") {
-            if (gameBoard.checkGameEnd(rowCol[0], rowCol[1], turn === player1 ? player2 : player1) === false) {
+            if (!gameBoard.getGameEnd()) { // Without this, spamming restart is more likely to cause delayed functions to be executed.
                 setTimeout(() => {
                     computer();
                 }, 1000)
@@ -177,18 +221,114 @@ const controller = (function() {
         }
     }
 
-    const soloPlay = function() {
+    const minimax = function(board, isMaximizing) {
+        let scores = { "❌": -1, "⭕️": 1, draw: 0 };
 
+        let winner = checkWinner(board);
+        if (winner) {
+            return scores[winner];
+        }
+
+        if (isMaximizing) {
+            let bestScore = -Infinity;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (board[i][j] === "") {
+                        board[i][j] = "⭕️";
+                        let score = minimax(board, false);
+                        board[i][j] = "";
+                        bestScore = Math.max(score, bestScore);
+                    }
+                }
+            }
+            return bestScore;
+        }
+
+        else {
+            let bestScore = Infinity;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (board[i][j] === "") {
+                        board[i][j] = "❌";
+                        let score = minimax(board, true);
+                        board[i][j] = "";
+                        bestScore = Math.min(score, bestScore);
+                    }
+                }
+            }
+            return bestScore;
+        }
+    }
+
+    const checkWinner = function(board) {
+        let winner = null;
+
+        // Check rows and columns
+        for (let i = 0; i < 3; i++) {
+            if (board[i][0] !== "" && board[i].every((cell) => cell === board[i][0])) {
+                winner = board[i][0];
+                break;
+            }
+            if (board[0][i] !== "" && board.every((row) => row[i] === board[0][i])) {
+                winner = board[0][i];
+                break;
+            }
+        }
+
+        // Check diagonals
+        if (
+            winner === null &&
+            board[0][0] !== "" &&
+            board[0][0] === board[1][1] &&
+            board[1][1] === board[2][2]
+        ) {
+            winner = board[0][0];
+        }
+
+        if (
+            winner === null &&
+            board[0][2] !== "" &&
+            board[0][2] === board[1][1] &&
+            board[1][1] === board[2][0]
+        ) {
+            winner = board[0][2];
+        }
+
+        // If a winner is found, return the winner
+        if (winner !== null) {
+            return winner;
+        }
+
+        // Check for a draw
+        let allCellsFilled = true;
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (board[i][j] === "") {
+                    allCellsFilled = false;
+                    break;
+                }
+            }
+        }
+
+        if (allCellsFilled) {
+            return "draw";
+        }
+
+        // If function hasn't returned yet, game is not finished
+        return null;
     }
 
     const playRound = function() {
-        legalMove = gameBoard.makeMove(turn, rowCol[0], rowCol[1]);
-        if (turn === player1 && legalMove) {
-            gameBoard.checkGameEnd(rowCol[0], rowCol[1], turn);
-            turn = player2;
-        } else if (legalMove) {
-            gameBoard.checkGameEnd(rowCol[0], rowCol[1], turn);
-            turn = player1;
+        // Don't allow rounds to be played if game is ended.
+        if (!gameBoard.getGameEnd()) {
+            legalMove = gameBoard.makeMove(turn, rowCol[0], rowCol[1]);
+            if (turn === player1 && legalMove) {
+                gameBoard.checkGameEnd(rowCol[0], rowCol[1], turn);
+                turn = player2;
+            } else if (legalMove) {
+                gameBoard.checkGameEnd(rowCol[0], rowCol[1], turn);
+                turn = player1;
+            }
         }
     }
 
@@ -221,4 +361,5 @@ const controller = (function() {
     return {playRound, pause}
 })();
 
-// I'd like for two bots to be able to play against each other.
+// Implement minimax algorithm
+// Refactor the messy ass code

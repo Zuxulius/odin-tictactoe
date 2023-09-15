@@ -149,7 +149,7 @@ const controller = (function() {
         let player1Name = player1Type !== 'bot' ? document.getElementById("player1-name").value : document.getElementById("player1-difficulty").value;
         let player2Name = player2Type !== 'bot' ? document.getElementById("player2-name").value : document.getElementById("player2-difficulty").value;
         player1 = player("❌", player1Type, player1Name);
-        player2 = player("⭕️", player2Type, player2Name);
+        player2 = player("🔵", player2Type, player2Name);
         turn = player1;
         if (player1Type === 'bot') {
             setTimeout( () => {
@@ -229,7 +229,7 @@ const controller = (function() {
     }
 
     const minimax = function(board, isMaximizing) {
-        let scores = { "❌": -1, "⭕️": 1, draw: 0 };
+        let scores = { "❌": -1, "🔵": 1, draw: 0 };
 
         let winner = checkWinner(board);
         if (winner) {
@@ -241,7 +241,7 @@ const controller = (function() {
             for (let i = 0; i < 3; i++) {
                 for (let j = 0; j < 3; j++) {
                     if (board[i][j] === "") {
-                        board[i][j] = "⭕️";
+                        board[i][j] = "🔵";
                         let score = minimax(board, false);
                         board[i][j] = "";
                         bestScore = Math.max(score, bestScore);

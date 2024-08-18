@@ -1,4 +1,18 @@
 
+const displayController = (function() {
+    const alert = document.getElementsByClassName("alert")[0];
+
+    const displayAlert = function(text, time) {
+        alert.style.visibility = "visible";
+        alert.textContent = text;
+        setTimeout(() => {
+            alert.style.visibility = "hidden";
+        }, time);
+    };
+
+    return { displayAlert };
+})();
+
 const gameBoard = (function() {
     let gameEnd;
     let turns = 0;
@@ -33,18 +47,10 @@ const gameBoard = (function() {
             board[row][column] = player.symbol;
             drawBoard();
         } else {
-            displayAlert("Cell is taken.", 1000);
+            displayController.displayAlert("Cell is taken.", 1000);
             legalMove = false;
         }
         return legalMove;
-    }
-
-    const displayAlert = function(text, time) {
-        alert.style.visibility = "visible";
-        alert.textContent = text;
-        setTimeout( () => {
-            alert.style.visibility = "hidden";
-        }, time);
     }
 
     const checkGameEnd = function(row, col, player) {
@@ -55,7 +61,7 @@ const gameBoard = (function() {
             board.map((row) => row[col]).every((cell) => cell === player.symbol)
             ) {
                 controller.pause.style.visibility = "visible";
-                displayAlert(`${player.name} wins!`.toUpperCase(), 3000);
+                displayController.displayAlert(`${player.name} wins!`.toUpperCase(), 3000);
                 gameEnd = true;
         } else if (
             // Check diagonals
@@ -69,12 +75,12 @@ const gameBoard = (function() {
             [...Array(board.length).keys()].every((i) => board[i][board.length - 1 - i] === player.symbol)
         ) {
                 controller.pause.style.visibility = "visible";
-                displayAlert(`${player.name} wins!`.toUpperCase(), 3000);
+                displayController.displayAlert(`${player.name} wins!`.toUpperCase(), 3000);
                 gameEnd = true;
         } else if (turns === 9) {
                 // game is finished with a draw
                 controller.pause.style.visibility = "visible";
-                displayAlert("IT'S A DRAW!", 3000);
+                displayController.displayAlert("IT'S A DRAW!", 3000);
                 gameEnd = true;
         } else {return false}
     }

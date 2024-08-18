@@ -23,16 +23,9 @@ const gameBoard = (function() {
                     ["","",""]
                 ];
     let board = freshBoard.map(row => row.slice());
-    // // I think this just sets up the board
-    // for (let row = 0; row < 3; row++) {
-    //     board[row] = []; // Create 3 arrays (ROWS)
-    //     for (let column = 0; column < 3; column++) {
-    //         board[row].push("-"); // Create a column for each row and set it to empty
-    //     }
-    // }
 
     const drawBoard = function() {
-        for (let row = 0; row < 3; row++) { // Don't repeat yourself??
+        for (let row = 0; row < 3; row++) {
             for (let column = 0; column < 3; column++) {
                 document.getElementById(`${row}${column}`).textContent = board[row][column]
             }
